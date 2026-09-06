@@ -62,4 +62,30 @@ with tempfile.TemporaryDirectory(prefix="dotfiles test ") as temporary:
             assert backups[0].is_symlink()
             assert os.readlink(backups[0]) == str(home / "missing target")
 
+    selected = root / "selected configs"
+    selected.mkdir()
+    (selected / "nvim").mkdir()
+    (selected / "nvim/init.lua").write_text("untouched")
+    env = dict(os.environ, HOME=str(root), XDG_CONFIG_HOME=str(selected))
+    command = ["sh", str(repo / "install.sh")]
+    for names in (("ghostty",), ("kitty", "ghostty", "kitty")):
+        subprocess.run(command + list(names), cwd=root, env=env, check=True,
+                       capture_output=True, text=True)
+        assert set(p.name for p in selected.iterdir()) == {"nvim", *names}
+        for name in names:
+            assert (selected / name).is_symlink()
+            assert (selected / name).resolve() == configs / name
+        assert (selected / "nvim/init.lua").read_text() == "untouched"
+
+    for invalid in ("unknown", "../tests", ".", "..", "", "README.md"):
+        result = subprocess.run(command + ["wezterm", invalid], cwd=root,
+                                env=env, capture_output=True, text=True)
+        assert result.returncode != 0 and result.stderr
+        assert not (selected / "wezterm").exists()
+        assert set(p.name for p in selected.iterdir()) == {"kitty", "ghostty", "nvim"}
+
+    result = subprocess.run(command + ["--help"], env=env, check=True,
+                            capture_output=True, text=True)
+    assert "Usage:" in result.stdout
+
 print("Install checks passed")
