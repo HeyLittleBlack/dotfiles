@@ -14,21 +14,23 @@ case "$config_dir" in
     *) echo 'Config directory must be an absolute path.' >&2; exit 1 ;;
 esac
 
-source_dir=$repo_dir/kitty
-target=$config_dir/kitty
-[ -d "$source_dir" ] || { echo "Missing config: $source_dir" >&2; exit 1; }
+for app in kitty nvim; do
+    source_dir=$repo_dir/$app
+    target=$config_dir/$app
+    [ -d "$source_dir" ] || { echo "Missing config: $source_dir" >&2; exit 1; }
 
-if [ -L "$target" ] && [ "$(readlink "$target")" = "$source_dir" ]; then
-    echo "Already installed: $target"
-    exit 0
-fi
+    if [ -L "$target" ] && [ "$(readlink "$target")" = "$source_dir" ]; then
+        echo "Already installed: $target"
+        continue
+    fi
 
-mkdir -p "$config_dir"
-if [ -e "$target" ] || [ -L "$target" ]; then
-    backup_dir=$(mktemp -d "$config_dir/kitty.backup.XXXXXX")
-    mv "$target" "$backup_dir/kitty"
-    echo "Backup: $backup_dir/kitty"
-fi
+    mkdir -p "$config_dir"
+    if [ -e "$target" ] || [ -L "$target" ]; then
+        backup_dir=$(mktemp -d "$config_dir/$app.backup.XXXXXX")
+        mv "$target" "$backup_dir/$app"
+        echo "Backup: $backup_dir/$app"
+    fi
 
-ln -s "$source_dir" "$target"
-echo "Installed: $target -> $source_dir"
+    ln -s "$source_dir" "$target"
+    echo "Installed: $target -> $source_dir"
+done
