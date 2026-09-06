@@ -1,0 +1,57 @@
+keybind=alt+`>\=new_split:right
+keybind=alt+`>-=new_split:down
+keybind=alt+`>down=goto_split:down
+keybind=alt+`>left=goto_split:left
+keybind=alt+`>right=goto_split:right
+keybind=alt+`>up=goto_split:up
+
+keybind=alt+`>j=goto_split:down
+keybind=alt+`>h=goto_split:left
+keybind=alt+`>l=goto_split:right
+keybind=alt+`>k=goto_split:up
+
+keybind=ctrl+1=goto_tab:1
+keybind=ctrl+2=goto_tab:2
+keybind=ctrl+3=goto_tab:3
+keybind=ctrl+4=goto_tab:4
+keybind=ctrl+5=goto_tab:5
+keybind=ctrl+6=goto_tab:6
+keybind=ctrl+7=goto_tab:7
+keybind=ctrl+8=goto_tab:8
+keybind=ctrl+9=goto_tab:9
+keybind=ctrl+0=last_tab
+keybind=ctrl+shift+right=next_tab
+keybind=ctrl+shift+left=previous_tab
+
+keybind=ctrl+shift+k=next_tab
+keybind=ctrl+shift+j=previous_tab
+
+keybind=ctrl+shift+alt+r=prompt_surface_title
+
+# good feature but only support direction keys
+keybind= alt+`>v=toggle_tab_overview
+
+# 将 alt+k 映射为 方向右键
+keybind=alt+k=text:\x1b[C
+
+theme=Catppuccin Mocha
+font-family=Maple Mono Normal NF CN
+font-size=16
+
+# keybind = global:cmd+backquote=toggle_quick_terminal
+
+keybind=ctrl+shift+t=new_tab
+
+# move tab
+keybind=ctrl+shift+,=move_tab:-1
+keybind=ctrl+shift+.=move_tab:1
+
+# cmd + s -> ctrl + s
+keybind=cmd+s=text:\x13
+
+right-click-action=copy-or-paste
+# macos-window-buttons=hidden
+
+keybind=ctrl+shift+x=write_scrollback_file:open
+
+auto-update-channel = tip

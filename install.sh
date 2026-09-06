@@ -14,10 +14,10 @@ case "$config_dir" in
     *) echo 'Config directory must be an absolute path.' >&2; exit 1 ;;
 esac
 
-for app in kitty nvim; do
-    source_dir=$repo_dir/$app
+for source_dir in "$repo_dir"/configs/*; do
+    [ -d "$source_dir" ] || continue
+    app=${source_dir##*/}
     target=$config_dir/$app
-    [ -d "$source_dir" ] || { echo "Missing config: $source_dir" >&2; exit 1; }
 
     if [ -L "$target" ] && [ "$(readlink "$target")" = "$source_dir" ]; then
         echo "Already installed: $target"
