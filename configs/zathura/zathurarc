@@ -1,0 +1,4 @@
+set font "Maple Mono Normal NF CN 16"
+map [index] w navigate_index toggle
+map f toggle_fullscreen
+map [fullscreen] f toggle_fullscreen
