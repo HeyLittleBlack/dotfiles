@@ -39,6 +39,25 @@ for app do
     source_dir=$repo_dir/configs/$app
     target=$config_dir/$app
 
+    # Herdr stores runtime files beside config.toml, so only link the config file.
+    if [ "$app" = herdr ]; then
+        if [ -L "$target" ] && [ "$(readlink "$target")" = "$source_dir" ]; then
+            backup_dir=$(mktemp -d "$config_dir/$app.backup.XXXXXX")
+            mv "$target" "$backup_dir/$app"
+            mkdir -p "$target"
+            cp -R "$source_dir"/. "$target"
+            mv "$target/config.toml" "$backup_dir/config.toml"
+            echo "Backup: $backup_dir/$app"
+        elif [ -e "$target" ] && [ ! -d "$target" ]; then
+            backup_dir=$(mktemp -d "$config_dir/$app.backup.XXXXXX")
+            mv "$target" "$backup_dir/$app"
+            echo "Backup: $backup_dir/$app"
+        fi
+        mkdir -p "$target"
+        source_dir=$source_dir/config.toml
+        target=$target/config.toml
+    fi
+
     if [ -L "$target" ] && [ "$(readlink "$target")" = "$source_dir" ]; then
         echo "Already installed: $target"
         continue

@@ -13,8 +13,9 @@ with tempfile.TemporaryDirectory(prefix="dotfiles test ") as temporary:
     shutil.copy2(Path(__file__).resolve().parents[1] / "install.sh", repo)
     configs = repo / "configs"
     configs.mkdir()
-    for app in ("kitty", "nvim", "wezterm", "ghostty", "future-app"):
+    for app in ("kitty", "nvim", "wezterm", "ghostty", "future-app", "herdr"):
         (configs / app).mkdir()
+    (configs / "herdr/config.toml").write_text("[keys]\n")
     (configs / "README.md").write_text("Not a config directory\n")
     (repo / "tests").mkdir()
 
@@ -30,6 +31,8 @@ with tempfile.TemporaryDirectory(prefix="dotfiles test ") as temporary:
             target.write_text("keep me")
         elif kind == "symlink":
             target.symlink_to(home / "missing target")
+            (configs / "herdr/session.json").write_text("keep my session\n")
+            (config / "herdr").symlink_to(configs / "herdr")
         nvim_target = config / "nvim"
         nvim_target.mkdir()
         (nvim_target / "init.lua").write_text("-- original config\n")
@@ -44,7 +47,14 @@ with tempfile.TemporaryDirectory(prefix="dotfiles test ") as temporary:
             for source in configs.iterdir():
                 if source.is_dir():
                     installed = config / source.name
-                    assert installed.is_symlink() and installed.resolve() == source
+                    if source.name == "herdr":
+                        assert installed.is_dir() and not installed.is_symlink()
+                        assert (installed / "config.toml").is_symlink()
+                        assert (installed / "config.toml").resolve() == source / "config.toml"
+                        if kind == "symlink":
+                            assert (installed / "session.json").read_text() == "keep my session\n"
+                    else:
+                        assert installed.is_symlink() and installed.resolve() == source
             assert not (config / "README.md").exists()
             assert not (config / "tests").exists()
 
