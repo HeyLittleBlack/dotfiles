@@ -9,15 +9,21 @@ if [ "${1:-}" = "--help" ]; then
 fi
 
 case "$(uname -s)" in
-    Linux|Darwin) ;;
-    *) echo 'Only Linux and macOS are supported.' >&2; exit 1 ;;
+Linux | Darwin) ;;
+*)
+    echo 'Only Linux and macOS are supported.' >&2
+    exit 1
+    ;;
 esac
 
 repo_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd -P)
 config_dir=${XDG_CONFIG_HOME:-"${HOME:?HOME must be set}/.config"}
 case "$config_dir" in
-    /*) ;;
-    *) echo 'Config directory must be an absolute path.' >&2; exit 1 ;;
+/*) ;;
+*)
+    echo 'Config directory must be an absolute path.' >&2
+    exit 1
+    ;;
 esac
 
 if [ "$#" -eq 0 ]; then
@@ -28,14 +34,20 @@ if [ "$#" -eq 0 ]; then
 fi
 
 # Validate every name before changing any installed configuration.
-for app do
+for app; do
     case "$app" in
-        ''|.|..|*/*) echo "Invalid config name: $app" >&2; exit 1 ;;
+    '' | . | .. | */*)
+        echo "Invalid config name: $app" >&2
+        exit 1
+        ;;
     esac
-    [ -d "$repo_dir/configs/$app" ] || { echo "Unknown config: $app" >&2; exit 1; }
+    [ -d "$repo_dir/configs/$app" ] || {
+        echo "Unknown config: $app" >&2
+        exit 1
+    }
 done
 
-for app do
+for app; do
     source_dir=$repo_dir/configs/$app
     target=$config_dir/$app
 
