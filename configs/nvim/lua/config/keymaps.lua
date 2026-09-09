@@ -16,6 +16,7 @@ vim.keymap.set({ "n" }, "<D-Left>", "^", opts)
 vim.keymap.set({ "n" }, "<D-Right>", "$", opts)
 vim.keymap.set({ "i", "c" }, "<D-Left>", "<Home>", opts)
 vim.keymap.set({ "i", "c" }, "<D-Right>", "<End>", opts)
+vim.keymap.set({ "n", "i", "v" }, "<D-s>", "<cmd>write<cr>", { desc = "Save file", silent = true })
 vim.keymap.del({ "n", "t" }, "<C-/>", opts)
 
 -- local toggle_term = function()
