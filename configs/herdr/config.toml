@@ -1,3 +1,5 @@
+onboarding = false
+
 [keys]
 previous_tab = ["prefix+left", "prefix+h"]
 next_tab = ["prefix+right", "prefix+l"]
@@ -5,3 +7,6 @@ previous_agent = "prefix+k"
 next_agent = "prefix+j"
 focus_pane_left = ""
 focus_pane_right = ""
+
+[theme]
+name = "terminal"
