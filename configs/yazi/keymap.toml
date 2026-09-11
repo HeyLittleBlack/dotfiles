@@ -1,0 +1,4 @@
+[[mgr.prepend_keymap]]
+on   = [ "c", "a", "a" ]
+run  = "plugin local-archive"
+desc = "Archive selected files with paths"
