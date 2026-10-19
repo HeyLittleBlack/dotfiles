@@ -2,3 +2,15 @@
 on   = [ "c", "a", "a" ]
 run  = "plugin local-archive"
 desc = "Archive selected files with paths"
+
+[[mgr.prepend_keymap]]
+on   = "<A-p>"
+for  = "macos"
+run  = "shell -- qlmanage -p %s"
+desc = "Preview with Quick Look"
+
+[[mgr.prepend_keymap]]
+on   = "<A-p>"
+for  = "linux"
+run  = "shell -- sushi %s"
+desc = "Preview with Sushi"
