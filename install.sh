@@ -51,14 +51,19 @@ for app; do
     source_dir=$repo_dir/configs/$app
     target=$config_dir/$app
 
-    # Herdr stores runtime files beside config.toml, so only link the config file.
-    if [ "$app" = herdr ]; then
+    # Keep application-managed files local; only link the managed config file.
+    case "$app" in
+    herdr) config_file=config.toml ;;
+    bookokrat) config_file=keybindings.toml ;;
+    *) config_file= ;;
+    esac
+    if [ -n "$config_file" ]; then
         if [ -L "$target" ] && [ "$(readlink "$target")" = "$source_dir" ]; then
             backup_dir=$(mktemp -d "$config_dir/$app.backup.XXXXXX")
             mv "$target" "$backup_dir/$app"
             mkdir -p "$target"
             cp -R "$source_dir"/. "$target"
-            mv "$target/config.toml" "$backup_dir/config.toml"
+            mv "$target/$config_file" "$backup_dir/$config_file"
             echo "Backup: $backup_dir/$app"
         elif [ -e "$target" ] && [ ! -d "$target" ]; then
             backup_dir=$(mktemp -d "$config_dir/$app.backup.XXXXXX")
@@ -66,8 +71,8 @@ for app; do
             echo "Backup: $backup_dir/$app"
         fi
         mkdir -p "$target"
-        source_dir=$source_dir/config.toml
-        target=$target/config.toml
+        source_dir=$source_dir/$config_file
+        target=$target/$config_file
     fi
 
     if [ -L "$target" ] && [ "$(readlink "$target")" = "$source_dir" ]; then

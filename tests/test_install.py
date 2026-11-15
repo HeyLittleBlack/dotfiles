@@ -13,9 +13,10 @@ with tempfile.TemporaryDirectory(prefix="dotfiles test ") as temporary:
     shutil.copy2(Path(__file__).resolve().parents[1] / "install.sh", repo)
     configs = repo / "configs"
     configs.mkdir()
-    for app in ("kitty", "nvim", "wezterm", "ghostty", "future-app", "herdr"):
+    for app in ("kitty", "nvim", "wezterm", "ghostty", "future-app", "herdr", "bookokrat"):
         (configs / app).mkdir()
     (configs / "herdr/config.toml").write_text("[keys]\n")
+    (configs / "bookokrat/keybindings.toml").write_text('nav."w" = "select"\n')
     (configs / "README.md").write_text("Not a config directory\n")
     (repo / "tests").mkdir()
 
@@ -33,6 +34,9 @@ with tempfile.TemporaryDirectory(prefix="dotfiles test ") as temporary:
             target.symlink_to(home / "missing target")
             (configs / "herdr/session.json").write_text("keep my session\n")
             (config / "herdr").symlink_to(configs / "herdr")
+        (config / "bookokrat").mkdir()
+        (config / "bookokrat/config.yaml").write_text("theme: original\n")
+        (config / "bookokrat/keybindings.toml").write_text("# original keys\n")
         nvim_target = config / "nvim"
         nvim_target.mkdir()
         (nvim_target / "init.lua").write_text("-- original config\n")
@@ -47,7 +51,12 @@ with tempfile.TemporaryDirectory(prefix="dotfiles test ") as temporary:
             for source in configs.iterdir():
                 if source.is_dir():
                     installed = config / source.name
-                    if source.name == "herdr":
+                    if source.name == "bookokrat":
+                        assert installed.is_dir() and not installed.is_symlink()
+                        assert (installed / "keybindings.toml").is_symlink()
+                        assert (installed / "keybindings.toml").resolve() == source / "keybindings.toml"
+                        assert (installed / "config.yaml").read_text() == "theme: original\n"
+                    elif source.name == "herdr":
                         assert installed.is_dir() and not installed.is_symlink()
                         assert (installed / "config.toml").is_symlink()
                         assert (installed / "config.toml").resolve() == source / "config.toml"
@@ -57,6 +66,10 @@ with tempfile.TemporaryDirectory(prefix="dotfiles test ") as temporary:
                         assert installed.is_symlink() and installed.resolve() == source
             assert not (config / "README.md").exists()
             assert not (config / "tests").exists()
+
+        key_backups = list(config.glob("bookokrat.backup.*/bookokrat"))
+        assert len(key_backups) == 1
+        assert key_backups[0].read_text() == "# original keys\n"
 
         nvim_backups = list(config.glob("nvim.backup.*/nvim/init.lua"))
         assert len(nvim_backups) == 1
