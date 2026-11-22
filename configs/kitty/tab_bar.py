@@ -6,4 +6,5 @@ def draw_title(data):
     if not title:
         path = data["tab"].active_wd.rstrip("/")
         title = path.rsplit("/", 1)[-1] or "/"
-    return f'{data["index"]}: {title}'
+    marker = "Z " if data["layout_name"] == "stack" and data["num_windows"] > 1 else ""
+    return f'{data["index"]}: {marker}{title}'
